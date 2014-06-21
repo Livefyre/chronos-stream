@@ -1,0 +1,21 @@
+{
+  "name": "chronos-stream",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "stream": "git://github.com/Livefyre/stream.git",
+    "stream-objectmode": "0.0.2",
+    "util-extend": "^1.0.1"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "nock": "^0.36.2",
+    "sinon": "^1.10.2"
+  }
+}
