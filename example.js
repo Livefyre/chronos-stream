@@ -6,7 +6,7 @@ var activities = new ChronosStream(topic);
 
 activities.on('error', function (e) {
     console.error("Error with ChronosStream", e);
-})
+});
 
 activities.on('request', function (options) {
     console.log('requesting', options);

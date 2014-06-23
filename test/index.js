@@ -45,22 +45,18 @@ describe('chronos-stream', function () {
             .reply(200, responses.notHasPrev);     
 
         var chronos = new ChronosStream(topic);
-        var _requestSpy = sinon.spy(chronos, '_request');
 
         // it will emit a 'request' event
         var onRequest = sinon.spy();
         chronos.on('request', onRequest);
 
-        chronos.on('data', function read() {
+        chronos.on('data', function (data) {
+            // console.log('data', data);
             var activity = chronos.read();
             if ( ! activity) {
                 return;
             }
-            assert.ok(activity);
-            assert.ok(_requestSpy.callCount);
-            assert.ok(onRequest.callCount);
-            // mockServer.cleanAll();
-            // done();
+            assert.ok(activity.actor);
         });
 
         chronos.on('end', function () {
@@ -74,8 +70,8 @@ describe('chronos-stream', function () {
             assert.ok(/404/.test(e.message));
             done();
         });
-        stream.once('data', function () {
-            // debugger;
+        stream.once('data', function (data) {
+            // console.log('data', data);
         });
     });
     it('emits error event on 400', function (done) {
@@ -85,8 +81,8 @@ describe('chronos-stream', function () {
             assert.ok(/400/.test(e.message));
             done();
         });
-        stream.once('data', function () {
-            // debugger;
+        stream.once('data', function (data) {
+            // console.log('data', data);
         });
     });
 });

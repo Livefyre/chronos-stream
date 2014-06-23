@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "is-array": "^1.0.1",
+    "readable-stream": "^1.0.27-1",
     "stream": "git://github.com/Livefyre/stream.git",
     "stream-objectmode": "0.0.2",
     "util-extend": "^1.0.1"
