@@ -7,12 +7,12 @@ var inherits = require('inherits');
 /**
  * Base class for streaming response strings from an HTTP Collection that is
  * paged.
- * You just need to implement _getNextUrl.
+ * You just need to implement _getNextRequest.
  */
-function PagedHttpStream(url, opts) {
+function PagedHttpStream(initialRequest, opts) {
   opts = opts || {};
   Readable.call(this, opts);
-  this._nextUrl = url;
+  this._nextRequest = initialRequest;
 }
 inherits(PagedHttpStream, Readable);
 
@@ -23,12 +23,12 @@ inherits(PagedHttpStream, Readable);
  */
 PagedHttpStream.prototype._read = function (x, done) {
   var self = this;
-  var url = this._nextUrl;
-  if ( ! url) {
+  var request = this._nextRequest;
+  if ( ! request) {
     // we're done
     return this.push(null);
   }
-  this._request(url, function (res) {
+  this._request(request, function (res) {
     var buffer = '';
     if (res.statusCode !== 200) {
       return self.emit('error', new Error(res.statusCode));
@@ -40,7 +40,7 @@ PagedHttpStream.prototype._read = function (x, done) {
       buffer += d;
     });
     res.once('end', function () {
-      self._nextUrl = self._getNextUrl(url, res, buffer);
+      self._nextRequest = self._getNextRequest(request, res, buffer);
       self.push(buffer);
     });
   });
@@ -54,13 +54,14 @@ PagedHttpStream.prototype._request = function (options, cb) {
   if (typeof options === 'string') {
     return http.get(options, cb);
   }
-  http.request(options, cb);
+  var req = http.request(options, cb);
+  req.end();
 };
 
 /**
- * Return the next URL that should be requested
+ * Return the next options that should be passed to http.request
  */
-PagedHttpStream.prototype._getNextUrl = function (req, res, body) {
-  throw new Error('PagedHttpStream#_getNextUrl not implemented');
+PagedHttpStream.prototype._getNextRequest = function (lastRequest, res, body) {
+  throw new Error('PagedHttpStream#_getNextRequest not implemented');
 };
 

@@ -4,14 +4,11 @@ all: build
 
 build: node_modules
 
-dist: build src config/requirejs.conf.js
-	./node_modules/requirejs/bin/r.js -o ./config/build.conf.js	
-
-css: build
-	lessc demos/main/main-styles.css > demos/main/index.css
+dist: build
+	mkdir -p dist && ./node_modules/.bin/browserify -s chronos-stream index.js -o dist/chronos-stream.js
 
 watch: build
-	./node_modules/.bin/watchify -s activity-element  -t brfs src/index.js -o dist/activity-element.js
+	./node_modules/.bin/watchify -s chronos-stream index.js -o dist/chronos-stream.js
 
 # if package.json changes, install
 node_modules: package.json
