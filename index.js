@@ -16,12 +16,22 @@ function ChronosActivityStream(topic, opts) {
   PassThrough.call(this, opts);
 
   this.topic = topic;
+  this._responses = new ChronosResponseStream(topic);
 
-  // Get responses, parse to .data objects, and re-emit any errors
-  (new ChronosResponseStream(topic))
+  process.nextTick(flow.bind(this));
+}
+inherits(ChronosActivityStream, PassThrough);
+
+// Get responses, parse to .data objects, and re-emit any errors
+function flow() {
+  this._responses
     .on('error', this.emit.bind(this, 'error'))
     .pipe(new ResponseToObjects())
     .on('error', this.emit.bind(this, 'error'))
     .pipe(this);
 }
-inherits(ChronosActivityStream, PassThrough);
+
+ChronosActivityStream.prototype.auth = function (creds) {
+  this._responses.auth(creds);
+  return this;
+};

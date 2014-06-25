@@ -11,10 +11,19 @@ var PagedHttpStream = require('./paged-http-stream');
  * @param opts {object} Stream options
  */
 function ChronosResponseStream(topic, opts) {
-  PagedHttpStream.call(this, chronosRequest(topic), opts);
+  PagedHttpStream.call(this, opts);
   this.topic = topic;
 }
 inherits(ChronosResponseStream, PagedHttpStream);
+
+/**
+ * Provide auth credentials (e.g. lftoken)
+ * These are required for certain topics
+ */
+ChronosResponseStream.prototype.auth = function (creds) {
+  this._authCredentials = creds;
+  return this;
+};
 
 /**
  * Required by PagedHttpStream.
@@ -22,9 +31,14 @@ inherits(ChronosResponseStream, PagedHttpStream);
  * Return the absolute URL for the next request.
  */
 ChronosResponseStream.prototype._getNextRequest = function (req, res, body) {
-  var obj = JSON.parse(body);
-  var cursor = obj.meta && obj.meta.cursor;
-  return chronosRequest(this.topic, cursor);
+  var obj;
+  var cursor;
+  // after first request, inspect the last request for the cursor
+  if (req) {
+    obj = JSON.parse(body);
+    cursor = obj.meta && obj.meta.cursor;
+  }
+  return chronosRequest(this.topic, cursor, this._authCredentials);
 };
 
 /**
@@ -34,16 +48,25 @@ ChronosResponseStream.prototype._getNextRequest = function (req, res, body) {
  * @param topic {string} Chronos topic to get activities about
  * @param cursor {object} response.meta.cursor value from a response
  */
-function chronosRequest(topic, cursor) {
+function chronosRequest(topic, cursor, token) {
   var template = 'http://saturn.qa-ext.livefyre.com/api/v4/renderer/{topic}';
   var chronosUrl = template.replace('{topic}', topic);
+  var query = {};
   if (cursor) {
     if ( ! cursor.hasPrev) {
       // we're done
       return;
     }
-    chronosUrl += '?' + qs.stringify({ until: cursor.prev });
-  } 
+    query['until'] = cursor.prev;
+  }
+  if (token) {
+    query['lftoken'] = token;
+  }
+  if (Object.keys(query)) {
+    chronosUrl += '?' + qs.stringify(query);
+  }
+  // great we have a url, but we actually want to return
+  // an options object that can be passed to require('http').request
   var options = url.parse(chronosUrl);
   options.withCredentials = false;
   return options;

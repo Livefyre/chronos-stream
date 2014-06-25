@@ -9,10 +9,11 @@ var inherits = require('inherits');
  * paged.
  * You just need to implement _getNextRequest.
  */
-function PagedHttpStream(initialRequest, opts) {
+function PagedHttpStream(opts) {
   opts = opts || {};
   Readable.call(this, opts);
-  this._nextRequest = initialRequest;
+  this._hasRequested = false;
+  this._nextRequest = null;
 }
 inherits(PagedHttpStream, Readable);
 
@@ -23,7 +24,12 @@ inherits(PagedHttpStream, Readable);
  */
 PagedHttpStream.prototype._read = function (x, done) {
   var self = this;
-  var request = this._nextRequest;
+  var request;
+  if ( ! this._hasRequested) {
+    request = this._getNextRequest(null, null, null);
+  } else {
+    request = this._nextRequest;
+  }
   if ( ! request) {
     // we're done
     return this.push(null);
@@ -40,6 +46,7 @@ PagedHttpStream.prototype._read = function (x, done) {
       buffer += d;
     });
     res.once('end', function () {
+      self._hasRequested = true;
       self._nextRequest = self._getNextRequest(request, res, buffer);
       self.push(buffer);
     });
