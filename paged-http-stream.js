@@ -24,12 +24,9 @@ inherits(PagedHttpStream, Readable);
  */
 PagedHttpStream.prototype._read = function (x, done) {
   var self = this;
-  var request;
-  if ( ! this._hasRequested) {
-    request = this._getNextRequest(null, null, null);
-  } else {
-    request = this._nextRequest;
-  }
+  var request = this._hasRequested
+    ? this._nextRequest
+    : this._getNextRequest(null, null, null);
   if ( ! request) {
     // we're done
     return this.push(null);
