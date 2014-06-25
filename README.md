@@ -20,6 +20,12 @@ activities.on('end', function () {
 });
 ```
 
+## Example CLI
+
+[example.js](./example.js) is an example CLI. It parses the following options
+
+* `--auth` - an lftoken to request Chronos with
+
 ## `make` commands
 
 * `make build` - will `npm install` and `bower install`
