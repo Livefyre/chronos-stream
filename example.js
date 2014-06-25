@@ -1,8 +1,16 @@
+var options = require('nopt')({
+    auth: String
+}, process.argv)
+
 var ChronosStream = require('chronos-stream');
 
 var topic = 'urn:livefyre:livefyre.com:site=290596:collection=2486485:SiteStream';
 
-var activities = new ChronosStream(topic);
+var activities = new ChronosStream(topic)
+
+if (options.auth) {
+    activities.auth(options.auth);
+}
 
 activities.on('error', function (e) {
     console.error("Error with ChronosStream", e);
@@ -16,4 +24,7 @@ activities.on('data', function (activity) {
     console.log(activity);
 });
 
-activities.on('end', process.exit);
+activities.on('end', function () {
+    console.log('ended');
+    process.exit();
+});

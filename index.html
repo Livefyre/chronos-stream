@@ -5,7 +5,16 @@ var ChronosStream = chronosStream;
 
 var topic = 'urn:livefyre:livefyre.com:site=290596:collection=2486485:SiteStream';
 
+// add ?auth=lftoken to auth
+var authQuery = window.location.search.match(/auth=([^&]+)/);
+var auth = authQuery ? authQuery[1] : null;
+
 var activities = new ChronosStream(topic);
+if (auth) {
+    activities.auth(auth);
+}
+
+// you'll probably need to auth
 
 activities.on('error', function (e) {
     console.error("Error with ChronosStream", e);
