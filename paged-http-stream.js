@@ -1,6 +1,6 @@
 module.exports = PagedHttpStream;
 
-var Readable = require('stream-objectmode/src/readable');
+var Readable = require('readable-stream/readable');
 var http = require('http');
 var inherits = require('inherits');
 
@@ -11,6 +11,7 @@ var inherits = require('inherits');
  */
 function PagedHttpStream(opts) {
   opts = opts || {};
+  opts.objectMode = true;
   Readable.call(this, opts);
   this._hasRequested = false;
   this._nextRequest = null;
@@ -22,7 +23,7 @@ inherits(PagedHttpStream, Readable);
  * This is called whenever data should be fetched from upstream.
  * In this case, make the next request to Chronos
  */
-PagedHttpStream.prototype._read = function (x, done) {
+PagedHttpStream.prototype._read = function (x, encoding, done) {
   var self = this;
   var request = this._hasRequested
     ? this._nextRequest

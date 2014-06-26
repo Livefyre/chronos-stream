@@ -16,7 +16,10 @@ function ChronosActivityStream(topic, opts) {
   PassThrough.call(this, opts);
 
   this.topic = topic;
-  this._responses = new ChronosResponseStream(topic);
+  this._responses = new ChronosResponseStream(topic, {
+    highWaterMark: 1,
+    lowWaterMark: 1
+  });
 
   process.nextTick(flow.bind(this));
 }
@@ -26,7 +29,10 @@ inherits(ChronosActivityStream, PassThrough);
 function flow() {
   this._responses
     .on('error', this.emit.bind(this, 'error'))
-    .pipe(new ResponseToObjects())
+    .pipe(new ResponseToObjects({
+      highWaterMark: 1,
+      lowWaterMark: 1
+    }))
     .on('error', this.emit.bind(this, 'error'))
     .pipe(this);
 }

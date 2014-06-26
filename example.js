@@ -4,7 +4,7 @@ var options = require('nopt')({
 
 var ChronosStream = require('chronos-stream');
 
-var topic = 'urn:livefyre:livefyre.com:site=290596:collection=2486485:SiteStream';
+var topic = 'urn:livefyre:profiles-qa.fyre.co:user=5329c8c285889e7bc6000000:personalStream';
 
 var activities = new ChronosStream(topic)
 
