@@ -13,7 +13,7 @@ var isArray = require('is-array');
 function ResponseToObjects(opts) {
     opts = opts || {};
     opts.objectMode = true;
-    return Transform.call(this, opts);
+    Transform.call(this, opts);
 }
 inherits(ResponseToObjects, Transform);
 
