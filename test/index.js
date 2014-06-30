@@ -8,7 +8,7 @@ var responses = {
     notHasPrev: require('./mocks/notHasPrev.json')
 };
 
-var host = 'http://saturn.qa-ext.livefyre.com:80';
+var host = 'http://bootstrap.qa-ext.livefyre.com:80';
 var topic = 'urn:livefyre:livefyre.com:site=290596:collection=2486485:SiteStream';
 
 function mockNextRequest(code, response) {

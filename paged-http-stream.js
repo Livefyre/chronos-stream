@@ -1,6 +1,6 @@
 module.exports = PagedHttpStream;
 
-var Readable = require('readable-stream/readable');
+var Readable = require('readable-stream').Readable;
 var http = require('http');
 var inherits = require('inherits');
 

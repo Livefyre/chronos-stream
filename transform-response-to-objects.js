@@ -1,6 +1,6 @@
 module.exports = ResponseToObjects;
 
-var Transform = require('readable-stream/transform');
+var Transform = require('readable-stream').Transform;
 var inherits = require('inherits');
 var isArray = require('is-array');
 

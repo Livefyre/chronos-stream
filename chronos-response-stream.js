@@ -49,9 +49,10 @@ ChronosResponseStream.prototype._getNextRequest = function (req, res, body) {
  * @param cursor {object} response.meta.cursor value from a response
  */
 function chronosRequest(topic, cursor, token) {
-  var template = 'http://saturn.qa-ext.livefyre.com/api/v4/renderer/{topic}';
-  var chronosUrl = template.replace('{topic}', topic);
-  var query = {};
+  var chronosUrl = 'http://bootstrap.qa-ext.livefyre.com/api/v4/timeline/';
+  var query = {
+    resource: topic
+  };
   if (cursor) {
     if ( ! cursor.hasPrev) {
       // we're done

@@ -2,7 +2,7 @@ module.exports = ChronosActivityStream;
 
 var ChronosResponseStream = require('./chronos-response-stream');
 var ResponseToObjects = require('./transform-response-to-objects');
-var PassThrough = require('readable-stream/passthrough');
+var PassThrough = require('readable-stream').PassThrough;
 var inherits = require('inherits');
 
 /**
