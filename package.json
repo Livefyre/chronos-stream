@@ -7,11 +7,13 @@
     "test": "mocha test"
   },
   "browser": {
-    "readable-stream": "stream-browserify"
+    "readable-stream": "stream-browserify",
+    "http": "http-browserify-xdr"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "http-browserify-xdr": "^1.4.1",
     "inherits": "^2.0.1",
     "is-array": "^1.0.1",
     "readable-stream": "^1.0.0",

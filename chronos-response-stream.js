@@ -33,8 +33,11 @@ ChronosResponseStream.prototype.auth = function (creds) {
 ChronosResponseStream.prototype._getNextRequest = function (req, res, body) {
   var obj;
   var cursor;
+  if (res && String(res.statusCode).charAt(0) !== '2') {
+    throw new Error('Non-2xx Chronos response: '+res.statusCode);
+  }
   // after first request, inspect the last request for the cursor
-  if (req) {
+  if (req && body) {
     obj = JSON.parse(body);
     cursor = obj.meta && obj.meta.cursor;
   }

@@ -1,9 +1,11 @@
 <!doctype html>
+<h1><code>chronos-stream</code> example</h1>
+<div id="main"></div>
 <script src="./dist/chronos-stream.js"></script>
 <script>
 var ChronosStream = chronosStream;
 
-var topic = 'urn:livefyre:livefyre.com:site=290596:collection=2486485:SiteStream';
+var topic = 'urn:livefyre:profiles-qa.fyre.co:user=539f8aa885889e79f500004a:personalStream';
 
 // add ?auth=lftoken to auth
 var authQuery = window.location.search.match(/auth=([^&]+)/);
@@ -24,7 +26,12 @@ activities.on('request', function (options) {
     console.log('requesting', options);
 });
 
+var main = document.getElementById('main');
 activities.on('data', function (activity) {
+    var pre = document.createElement('pre');
+    var activityStr = JSON.stringify(activity, null, '  ');
+    pre.appendChild(document.createTextNode(activityStr));
+    main.appendChild(pre);
     console.log(activity);
 });
 

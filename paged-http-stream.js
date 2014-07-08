@@ -23,7 +23,7 @@ inherits(PagedHttpStream, Readable);
  * This is called whenever data should be fetched from upstream.
  * In this case, make the next request to Chronos
  */
-PagedHttpStream.prototype._read = function (x, encoding, done) {
+PagedHttpStream.prototype._read = function () {
   var self = this;
   var request = this._hasRequested
     ? this._nextRequest
@@ -34,9 +34,6 @@ PagedHttpStream.prototype._read = function (x, encoding, done) {
   }
   this._request(request, function (res) {
     var buffer = '';
-    if (res.statusCode !== 200) {
-      return self.emit('error', new Error(res.statusCode));
-    }
     res.on('error', function (e) {
       console.log('response error', e);
     })
@@ -45,8 +42,13 @@ PagedHttpStream.prototype._read = function (x, encoding, done) {
     });
     res.once('end', function () {
       self._hasRequested = true;
-      self._nextRequest = self._getNextRequest(request, res, buffer);
-      self.push(buffer);
+      try {
+        self._nextRequest = self._getNextRequest(request, res, buffer);
+        self.push(buffer);
+      } catch (e) {
+        self.emit('error', e);
+        self.push(null);
+      }
     });
   });
 };
@@ -55,11 +57,17 @@ PagedHttpStream.prototype._read = function (x, encoding, done) {
  * Make an HTTP request
  */
 PagedHttpStream.prototype._request = function (options, cb) {
+  var self = this;
   this.emit('request', options);
   if (typeof options === 'string') {
     return http.get(options, cb);
   }
   var req = http.request(options, cb);
+  req.on('error', function (e) {
+    // error making the request (TCP, DNS, etc)
+    // no HTTP response even that was an error response
+    self.emit('error', e);
+  });
   req.end();
 };
 
