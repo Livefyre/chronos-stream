@@ -5,7 +5,8 @@ Stream activity objects about a topic from Livefyre's Chronos Service. Behind th
 This module is intended to work in both node.js and the browser (via browserify). Run `make dist` to put the browser bundle in dist/.
 
 ```javascript
-var activities = require('chronos-stream')('urn:livefyre:livefyre.com:site=290596:collection=2486485:SiteStream');
+var ChronosStream = require('chronos-stream');
+var activities = new ChronosStream('urn:livefyre:livefyre.com:site=290596:collection=2486485:SiteStream');
 
 activities.on('error', function (e) {
     console.error("Error streaming activities", e);
@@ -17,6 +18,16 @@ activities.on('data', function (activity) {
 
 activities.on('end', function () {
     console.log('done streaming activities from chronos');    
+});
+```
+
+## Options
+
+If you're requesting Livefyre's Chronos service on a non-production environment, you'll need to specify an environment of 'qa', 'uat', 'production', or 'fyre' (localdev).
+
+```javascript
+var uatActivities = new ChronosStream('topic', {
+    environment: 'uat'
 });
 ```
 

@@ -18,7 +18,8 @@ function ChronosActivityStream(topic, opts) {
   this.topic = topic;
   this._responses = new ChronosResponseStream(topic, {
     highWaterMark: 1,
-    lowWaterMark: 1
+    lowWaterMark: 1,
+    environment: opts.environment
   });
 
   process.nextTick(flow.bind(this));

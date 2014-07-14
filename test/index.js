@@ -8,10 +8,11 @@ var responses = {
     notHasPrev: require('./mocks/notHasPrev.json')
 };
 
-var host = 'http://bootstrap.qa-ext.livefyre.com:80';
+var defaultHost = 'http://bootstrap.livefyre.com:80';
 var topic = 'urn:livefyre:livefyre.com:site=290596:collection=2486485:SiteStream';
 
-function mockNextRequest(code, response) {
+function mockNextRequest(code, response, host) {
+    host = host || defaultHost;
     var fakeChronos = nock(host)
         .filteringPath(/.*/, '*')
         .get('*')
@@ -23,14 +24,14 @@ function mockNextRequest(code, response) {
 describe('chronos-stream', function () {
     beforeEach(function () {
         nock.cleanAll();
-    })
+    });
     it('can be constructed with topic', function () {
         var stuff = new ChronosStream(topic);
         assert.equal(stuff.topic, topic);
     });
     it('can read data', function (done) {
         nock.disableNetConnect();
-        var nockServer = nock(host)
+        var nockServer = nock(defaultHost)
             // If the request doesn't include ?until, then give
             // a response that hasPrev
             // if we specified until, give one back without hasPrev
@@ -63,6 +64,14 @@ describe('chronos-stream', function () {
             done();
         });
     });
+    it('can be constructed for non-prod envs', function (done) {
+        mockNextRequest(200, responses.notHasPrev, 'http://bootstrap.t402.livefyre.com:80')
+        var stream = new ChronosStream(topic, { environment: 'uat' });
+        assert.equal(stream._responses.environment, 'uat');
+        stream.once('data', function (d) {
+            done();
+        });
+    })
     it('emits error event on 404', function (done) {
         var server = mockNextRequest(404, {});
         var stream = new ChronosStream(topic);
